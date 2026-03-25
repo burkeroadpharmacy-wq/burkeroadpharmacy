@@ -1,24 +1,8 @@
 import { Link } from "wouter";
-import { trpc } from "@/lib/trpc";
-
-const staticConditions = [
-  { icon: "⚖️", title: "Hormone Therapy", slug: "hormone-therapy", summary: "Bioidentical HRT, menopause management, thyroid support, and testosterone therapy" },
-  { icon: "💊", title: "Pain Management", slug: "pain-management", summary: "Topical analgesics, neuropathic pain, chronic pain solutions, and PLO gels" },
-  { icon: "🌿", title: "Dermatology", slug: "dermatology", summary: "Custom skincare, anti-ageing, acne treatments, and wound care formulations" },
-  { icon: "👶", title: "Paediatrics", slug: "paediatrics", summary: "Child-friendly flavours, precise dosing, and age-appropriate formulations" },
-  { icon: "🐾", title: "Veterinary", slug: "veterinary", summary: "Pet medications in palatable forms, precise dosing for all animal sizes" },
-  { icon: "🧬", title: "Low Dose Naltrexone", slug: "low-dose-naltrexone", summary: "LDN for autoimmune conditions, chronic pain, and inflammatory disorders" },
-  { icon: "♂️", title: "Men's Health", slug: "mens-health", summary: "Testosterone therapy, erectile dysfunction, hair loss, and vitality support" },
-  { icon: "♀️", title: "Women's Health", slug: "womens-health", summary: "PCOS, endometriosis, fertility support, and pregnancy wellness" },
-  { icon: "🏃", title: "Sports Medicine", slug: "sports-medicine", summary: "Performance enhancement, injury recovery, and topical anti-inflammatories" },
-  { icon: "🦷", title: "Dental", slug: "dental", summary: "Oral rinses, anaesthetic preparations, and specialised dental formulations" },
-  { icon: "🫁", title: "Gastroenterology", slug: "gastroenterology", summary: "IBS, IBD, reflux management, and digestive health support" },
-  { icon: "🧠", title: "Mental Health", slug: "mental-health", summary: "Anxiety, depression, ADHD, and mood disorder support" },
-];
+import { conditions } from "@/data/conditions";
 
 export default function Conditions() {
-  const { data: dbConditions, isLoading } = trpc.conditions.list.useQuery();
-  const displayConditions = dbConditions ?? staticConditions;
+  const displayConditions = conditions;
 
   return (
     <div className="bg-[#f9fafb]">

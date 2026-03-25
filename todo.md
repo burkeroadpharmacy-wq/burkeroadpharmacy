@@ -37,3 +37,24 @@
 - [ ] Knowledge Centre article detail pages
 - [ ] Google Reviews API integration for live testimonials
 - [ ] Email notification on new contact/prescription submissions
+
+## Phase 3: Static Refactor for VentraIP Deployment
+- [x] Remove server/ folder (Express, tRPC, Drizzle, JWT, OAuth, db helpers)
+- [x] Remove drizzle/ schema and migrations folder
+- [x] Remove backend-only npm packages (drizzle-orm, mysql2, @trpc/server, jose, cookie, express, etc.)
+- [x] Create src/data/conditions.ts with all 12 conditions
+- [x] Create src/data/services.ts with all 8 services
+- [x] Create src/data/articles.ts with all 8 knowledge centre articles
+- [x] Create src/data/testimonials.ts with all 5 testimonials
+- [x] Create src/data/faqs.ts with pharmacy FAQs
+- [x] Refactor Home.tsx to import from static data modules
+- [x] Refactor Conditions.tsx to import from static data modules
+- [x] Refactor KnowledgeCentre.tsx to import from static data modules
+- [x] Refactor Contact.tsx to submit via Web3Forms
+- [x] Refactor Prescribers.tsx to submit via Web3Forms with file upload
+- [x] Simplify vite.config.ts to pure static Vite (remove server proxy)
+- [x] Update package.json scripts (remove db:push, server build)
+- [x] Generate .htaccess for React SPA routing on VentraIP
+- [x] Generate deployment README for VentraIP cPanel
+- [x] Verify pnpm build produces clean static dist/
+- [x] Confirm no env vars required for core functionality (only VITE_WEB3FORMS_KEY for forms)

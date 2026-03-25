@@ -1,0 +1,13 @@
+# Burke Road Compounding Pharmacy — Apache SPA routing for VentraIP cPanel
+# Upload the contents of dist/ to public_html/ — this file will be at public_html/.htaccess
+
+Options -MultiViews
+RewriteEngine On
+
+# Serve existing files and directories directly
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Route all other requests to index.html (React SPA routing)
+RewriteRule ^ index.html [L]

@@ -5,7 +5,8 @@
  */
 import { Link } from "wouter";
 import { ArrowRight, Star, Truck, Syringe, Pill, Clock, Phone, MapPin } from "lucide-react";
-import { trpc } from "@/lib/trpc";
+import { conditions } from "@/data/conditions";
+import { testimonials } from "@/data/testimonials";
 
 const CDN = "https://d2xsxph8kpxj0f.cloudfront.net/93092134/Sz8SP7v55RRQvADhiwfHx5";
 
@@ -56,46 +57,9 @@ const services = [
   },
 ];
 
-const conditions = [
-  { icon: "⚖️", label: "Hormone Therapy", slug: "hormone-therapy" },
-  { icon: "💊", label: "Pain Management", slug: "pain-management" },
-  { icon: "🌿", label: "Dermatology", slug: "dermatology" },
-  { icon: "👶", label: "Paediatrics", slug: "paediatrics" },
-  { icon: "🐾", label: "Veterinary", slug: "veterinary" },
-  { icon: "🧬", label: "Low Dose Naltrexone", slug: "low-dose-naltrexone" },
-  { icon: "♂️", label: "Men's Health", slug: "mens-health" },
-  { icon: "♀️", label: "Women's Health", slug: "womens-health" },
-  { icon: "🏃", label: "Sports Medicine", slug: "sports-medicine" },
-  { icon: "🦷", label: "Dental", slug: "dental" },
-  { icon: "🫁", label: "Gastroenterology", slug: "gastroenterology" },
-  { icon: "🧠", label: "Mental Health", slug: "mental-health" },
-];
-
-const testimonials = [
-  {
-    name: "Sarah M.",
-    rating: 5,
-    text: "The compounding team at Burke Road has been incredible. My BHRT formulation is perfectly tailored and the pharmacists always take time to explain everything.",
-  },
-  {
-    name: "James T.",
-    rating: 5,
-    text: "Been coming here for years. The staff are knowledgeable, friendly, and the service is always prompt. Best pharmacy in Camberwell by far.",
-  },
-  {
-    name: "Dr. Rebecca L.",
-    rating: 5,
-    text: "As a GP, I regularly refer patients to Burke Road for compounding. Their attention to detail and communication with prescribers is excellent.",
-  },
-];
-
 export default function Home() {
-  const { data: dbConditions } = trpc.conditions.list.useQuery();
-  const { data: dbTestimonials } = trpc.testimonials.list.useQuery();
-
-  // Use DB data if available, fall back to static data
-  const displayConditions = dbConditions ?? conditions;
-  const displayTestimonials = dbTestimonials ?? testimonials;
+  const displayConditions = conditions;
+  const displayTestimonials = testimonials;
 
   return (
     <div className="bg-[#f9fafb]">
@@ -293,7 +257,7 @@ export default function Home() {
                   className="text-xs font-semibold text-[#1a4d2e] group-hover:text-[#2d6a4f] leading-tight"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  {c.label}
+                  {c.title}
                 </div>
               </Link>
             ))}

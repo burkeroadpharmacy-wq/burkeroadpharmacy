@@ -7,29 +7,49 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { trpc } from "@/lib/trpc";
+
+// Replace with your Web3Forms access key from https://web3forms.com
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY ?? "YOUR_WEB3FORMS_ACCESS_KEY";
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const [form, setForm] = useState({
     firstName: "", lastName: "", email: "", phone: "",
     enquiryType: "general", message: ""
   });
 
-  const submitMutation = trpc.contact.submit.useMutation({
-    onSuccess: () => {
-      toast.success("Message sent! We'll get back to you within 1 business day.");
-      setSubmitted(true);
-    },
-    onError: (err) => {
-      toast.error("Failed to send message. Please call us directly on (03) 9889 8622.");
-      console.error(err);
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    submitMutation.mutate(form);
+    setIsPending(true);
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `New Enquiry — ${form.enquiryType} — ${form.firstName} ${form.lastName}`,
+          from_name: `${form.firstName} ${form.lastName}`,
+          email: form.email,
+          phone: form.phone,
+          enquiry_type: form.enquiryType,
+          message: form.message,
+          botcheck: "",
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Message sent! We'll get back to you within 1 business day.");
+        setSubmitted(true);
+      } else {
+        throw new Error(data.message ?? "Submission failed");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to send message. Please call us directly on (03) 9889 8622.");
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
@@ -270,10 +290,10 @@ export default function Contact() {
 
                 <Button
                   type="submit"
-                  disabled={submitMutation.isPending}
+                  disabled={isPending}
                   className="w-full bg-[#1a4d2e] hover:bg-[#2d6a4f] text-white py-3"
                 >
-                  {submitMutation.isPending ? "Sending..." : "Send Message"}
+                  {isPending ? "Sending..." : "Send Message"}
                 </Button>
               </form>
             )}

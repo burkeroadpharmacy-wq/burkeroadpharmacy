@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { trpc } from "@/lib/trpc";
+
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY ?? "YOUR_WEB3FORMS_ACCESS_KEY";
 
 interface Medication {
   id: string;
@@ -55,23 +56,49 @@ export default function Prescribers() {
       m.map((med) => (med.id === id ? { ...med, [field]: value } : med))
     );
 
-  const submitMutation = trpc.prescriptions.submit.useMutation({
-    onSuccess: () => {
-      toast.success("Prescription submitted to Burke Road Pharmacy!");
-    },
-    onError: (err) => {
-      toast.error("Submission failed. Please call (03) 9889 8622.");
-      console.error(err);
-    },
-  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
-    submitMutation.mutate({
-      ...prescriber,
-      ...patient,
-      medications: JSON.stringify(medications),
-      prescriptionDate,
-    });
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const medsText = medications
+        .map((m, i) => `Medication ${i + 1}: ${m.activeIngredient} ${m.dosageForm} ${m.quantity}${m.quantityUnit} — ${m.directions} (Repeats: ${m.repeats}, Schedule: ${m.schedule})`)
+        .join("\n");
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          subject: `New Prescription — ${prescriber.prescriberName} for ${patient.patientName}`,
+          from_name: prescriber.prescriberName || "Prescriber",
+          email: prescriber.practiceEmail || "noreply@burkeroadpharmacy.com.au",
+          prescriber_name: prescriber.prescriberName,
+          prescriber_number: prescriber.prescriberNumber,
+          practice_name: prescriber.practiceName,
+          practice_phone: prescriber.practicePhone,
+          patient_name: patient.patientName,
+          patient_dob: patient.patientDob,
+          patient_phone: patient.patientPhone,
+          medicare_number: patient.medicareNumber,
+          allergies: patient.allergies,
+          prescription_date: prescriptionDate,
+          medications: medsText,
+          special_instructions: patient.specialInstructions,
+          botcheck: "",
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Prescription submitted to Burke Road Pharmacy!");
+      } else {
+        throw new Error(data.message ?? "Submission failed");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Submission failed. Please call (03) 9889 8622.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handlePrint = () => {
@@ -399,10 +426,10 @@ export default function Prescribers() {
         <div className="flex flex-wrap gap-4">
           <Button
             onClick={handleSubmit}
-            disabled={submitMutation.isPending}
+            disabled={isSubmitting}
             className="flex items-center gap-2 bg-[#2d6a4f] hover:bg-[#1a4d2e] text-white px-8 py-3"
           >
-            <Send className="w-5 h-5" /> {submitMutation.isPending ? "Submitting..." : "Submit to Pharmacy"}
+            <Send className="w-5 h-5" /> {isSubmitting ? "Submitting..." : "Submit to Pharmacy"}
           </Button>
           <Button
             onClick={handlePrint}

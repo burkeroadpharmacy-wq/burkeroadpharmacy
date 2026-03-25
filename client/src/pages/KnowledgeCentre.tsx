@@ -1,84 +1,15 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { ArrowRight } from "lucide-react";
-import { trpc } from "@/lib/trpc";
-
-const staticArticles = [
-  {
-    category: "Hormone Therapy",
-    title: "Understanding Bioidentical Hormone Replacement Therapy (BHRT)",
-    excerpt:
-      "An overview of BHRT, how it differs from conventional HRT, and what patients should know before starting treatment.",
-    readTime: "5 min read",
-    slug: "bhrt-overview",
-  },
-  {
-    category: "Pain Management",
-    title: "Topical Pain Relief: How Compounded Creams Work",
-    excerpt:
-      "Topical analgesics can provide targeted pain relief with fewer systemic side effects. Learn how they work and when they're appropriate.",
-    readTime: "4 min read",
-    slug: "topical-pain-relief",
-  },
-  {
-    category: "LDN",
-    title: "Low Dose Naltrexone: What the Evidence Says",
-    excerpt:
-      "A balanced review of the current clinical evidence for LDN in autoimmune conditions, chronic pain, and inflammatory disorders.",
-    readTime: "6 min read",
-    slug: "ldn-evidence",
-  },
-  {
-    category: "PBS",
-    title: "Understanding Your PBS Co-payment and Safety Net",
-    excerpt:
-      "A plain-English guide to how the Pharmaceutical Benefits Scheme works, including co-payments, concession rates, and the Safety Net.",
-    readTime: "3 min read",
-    slug: "pbs-guide",
-  },
-  {
-    category: "Compounding",
-    title: "What is Pharmaceutical Compounding?",
-    excerpt:
-      "Compounding allows pharmacists to create personalised medications. Learn about the process, quality standards, and when it's appropriate.",
-    readTime: "4 min read",
-    slug: "what-is-compounding",
-  },
-  {
-    category: "Paediatrics",
-    title: "Giving Medications to Children: Tips for Parents",
-    excerpt:
-      "Practical advice for parents on administering medications to children, including flavoured compounded preparations.",
-    readTime: "3 min read",
-    slug: "paediatric-medications",
-  },
-  {
-    category: "Vaccinations",
-    title: "Which Vaccines Do I Need? A Guide for Adults",
-    excerpt:
-      "Many adults are not up to date with their vaccinations. This guide covers the key vaccines recommended for Australian adults.",
-    readTime: "5 min read",
-    slug: "adult-vaccines",
-  },
-  {
-    category: "Dermatology",
-    title: "Custom Skincare: When Off-the-Shelf Products Aren't Enough",
-    excerpt:
-      "For some skin conditions, commercially available products may not provide adequate treatment. Compounded skincare can help.",
-    readTime: "4 min read",
-    slug: "custom-skincare",
-  },
-];
-
-// categories derived dynamically in component
+import { articles, articleCategories } from "@/data/articles";
 
 export default function KnowledgeCentre() {
   const [activeCategory, setActiveCategory] = useState("All");
-  const { data: dbArticles } = trpc.articles.list.useQuery(
-    activeCategory !== "All" ? { category: activeCategory } : {}
-  );
-  const displayArticles = dbArticles ?? staticArticles;
-  const allCategories = ["All", ...Array.from(new Set(staticArticles.map(a => a.category)))];
+
+  const displayArticles =
+    activeCategory === "All"
+      ? articles
+      : articles.filter((a) => a.category === activeCategory);
 
   return (
     <div className="bg-[#f9fafb]">
@@ -103,7 +34,7 @@ export default function KnowledgeCentre() {
       <div className="container py-16">
         {/* Category Filter */}
         <div className="flex flex-wrap gap-2 mb-10">
-          {allCategories.map((cat) => (
+          {articleCategories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
@@ -124,7 +55,7 @@ export default function KnowledgeCentre() {
             <div key={a.slug} className="brp-card p-6 flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <span className="brp-badge text-xs">{a.category}</span>
-                <span className="text-gray-400 text-xs">{'readTimeMinutes' in a ? `${a.readTimeMinutes} min read` : (a as any).readTime}</span>
+                <span className="text-gray-400 text-xs">{a.readTimeMinutes} min read</span>
               </div>
               <h3
                 className="text-xl font-bold text-[#1a4d2e] mb-3 leading-snug"
@@ -183,14 +114,12 @@ export default function KnowledgeCentre() {
             >
               Call (03) 9889 8622
             </a>
-            <a
-              href="https://wa.me/61398898622"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/contact"
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-white/15 hover:bg-white/25 text-white font-semibold rounded-xl border border-white/40 transition-all"
             >
-              💬 WhatsApp
-            </a>
+              Send a Message
+            </Link>
           </div>
         </div>
       </div>
